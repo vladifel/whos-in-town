@@ -2,17 +2,21 @@ import { createStyles } from "@material-ui/core/styles";
 
 export const styles = () =>
     createStyles({
+        eventsContainer: {
+            maxHeight: '58%',
+            //position: 'absolute'
+        },
         header: {
             width: '100%',
             height: '5rem',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             backgroundColor: '#c2185b',
             boxShadow: '0 0.25rem 0.3rem 0 rgba(194,24,91,1)'
         },
         headerText: {
-            marginLeft: '2rem',
+            margin: '0.5rem 0 0 1rem',
             fontSize: '2rem',
             fontWeight: 900,
             color: '#ffffff'
@@ -22,9 +26,31 @@ export const styles = () =>
             height: '1rem',
             backgroundColor: '#8c0032'
         },
-        root: {
+        leftColumn: {
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center'
+            width: '48%',
+            marginRight: '0.5%'
         },
+        mainContainer: {
+            display: 'flex',
+            flexDirection: 'row',
+            margin: '1rem 0.5rem 0',
+            justifyContent: 'center'
+        },
+        rightColumn: {
+            width: '48%',
+            marginLeft: '0.5%'
+        },
+        root: {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            overflow: 'hidden',
+            width: '100%',
+            height: '100%'
+        },
+        searchContainer: {
+            marginBottom: '1rem'
+        }
     });
