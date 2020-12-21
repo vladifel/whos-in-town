@@ -73,11 +73,6 @@ const fetchBand = async (bandName: string) => {
         method: 'GET',
         url: `https://rest.bandsintown.com/artists/${bandName}?app_id=123`
     };
-    // const options: any = {
-    //     method: 'GET',
-    //     url: `http://www.omdbapi.com/?i=${movieId}&apikey=262c131`,
-    // };
-
 
     return await axios.request(options)
         .then(response => response.data)
@@ -89,10 +84,7 @@ const fetchEvents = async (bandName: string) => {
         method: 'GET',
         url: `https://rest.bandsintown.com/artists/${bandName}/events?app_id=123&date=upcoming`
     };
-    // const options: any = {
-    //     method: 'GET',
-    //     url: `http://www.omdbapi.com/?i=${movieId}&apikey=262c131`,
-    // };
+
     return await axios.request(options)
         .then(response => response.data)
         .catch(error => console.error(error));

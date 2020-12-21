@@ -29,10 +29,11 @@ export default createMuiTheme({
         },
         MuiCardContent: {
             root: {
+                display: 'flex',
+                flexGrow: 2,
                 padding: '1rem',
                 "&:last-child": {
                     paddingBottom: '0.5rem',
-                    width: 'initial'
                 }
             }
         },

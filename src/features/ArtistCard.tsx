@@ -45,7 +45,7 @@ const ArtistCard: React.FunctionComponent<IArtistCardCombinedProps> = (props: IA
                 image={props.artist.imgUrl}
                 title={`${props.artist.name}_img`}
             />
-            <CardContent className={props.classes.cardContent}>
+            <CardContent>
                 <Grid className={props.classes.cardContentContainer}>
                     <Grid>
                         <Link

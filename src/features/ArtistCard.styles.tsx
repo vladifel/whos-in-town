@@ -9,16 +9,10 @@ export const styles = () =>
             backgroundColor: '#c2185b',
             boxShadow: '0 0 0.3rem 0.1rem rgba(194,24,91,0.7)'
         },
-        cardContent: {
-            display: 'flex',
-            flexDirection: 'column',
-            width: '50%',
-            justifyContent: 'space-between',
-            //padding: '0.5rem'
-        },
         cardContentContainer: {
             height: '100%',
             display: 'flex',
+            flexGrow: 2,
             flexDirection: 'column',
             justifyContent: 'space-between'
         },

@@ -8,6 +8,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import FacebookIcon from '@material-ui/icons/Facebook';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import { IEvent } from './LandingPage';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
@@ -84,12 +85,72 @@ const venueCard = (props: ISelectedEventCombinedProps) => {
         </Card>
     )
 }
+
+const lineupCard = (props: ISelectedEventCombinedProps) => {
+    return (
+        <Card className={props.classes.lineupCard}>
+            {props.event.lineup.length === 1
+                ? <Grid container className={props.classes.lineupCardSingleLine}>
+                    <Typography className={props.classes.subHeaderText}>
+                        Lineup:
+                    </Typography>
+                    <Typography className={props.classes.secondaryText}>
+                        {` ${props.event.lineup}`}
+                    </Typography>
+                </Grid>
+                : <Grid container className={props.classes.lineupCardMultiline}>
+                    <Typography className={props.classes.subHeaderText}>
+                        Lineup:
+                    </Typography>
+                    <Typography className={props.classes.secondaryText}>
+                        {props.event.lineup.map((name, i) =>
+                            i !== props.event.lineup.length - 1
+                                ? `${name}, `
+                                : name
+                        )}
+                    </Typography>
+                </Grid>
+            }
+        </Card>
+    )
+}
+
+const offersCard = (props: ISelectedEventCombinedProps) => {
+    return (
+        <Card className={props.classes.offersCard}>
+            <Grid container className={props.classes.offersCardSingleLine}>
+                <Typography className={props.classes.subHeaderText}>
+                    Offers:
+                </Typography>
+                {props.event.offers.map((offer, i) =>
+                    <IconButton
+                        key={i}
+                        className={props.classes.offerIcon}
+                        disableFocusRipple
+                        disableRipple
+                    >
+                        <Link
+                            className={props.classes.offerIcon}
+                            href={offer.url}
+                            target="_blank"
+                        >
+                            <MonetizationOnIcon className={props.classes.offerIconColor} />
+                        </Link>
+                    </IconButton>
+                )}
+            </Grid>
+        </Card>
+    )
+}
+
 const SelectedEvent: React.FunctionComponent<ISelectedEventCombinedProps> = (props: ISelectedEventCombinedProps) => {
     return (
         <Fragment>
             {nameCard(props)}
             {ticketsCard(props)}
             {venueCard(props)}
+            {lineupCard(props)}
+            {props.event.offers.length ? offersCard(props) : undefined}
         </Fragment>
     );
 }

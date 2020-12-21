@@ -8,7 +8,7 @@ export const styles = () =>
         },
         listItem: {
             cursor: 'pointer',
-            margin: '0.3rem 0',
+            marginBottom: '0.3rem',
             borderRadius: '0.5rem',
             "&:active, &:hover, &.Mui-focusVisible": {
                 backgroundColor: '#fa5788'
@@ -28,7 +28,7 @@ export const styles = () =>
             fontWeight: 700
         },
         root: {
-            width: 'inherit',
+            width: '48%',
             maxHeight: '60%',
             position: 'fixed',
             overflow: 'auto'

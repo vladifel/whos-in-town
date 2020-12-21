@@ -4,7 +4,7 @@ export const styles = () =>
     createStyles({
         eventsContainer: {
             maxHeight: '58%',
-            //position: 'absolute'
+            marginTop: '0.5rem'
         },
         header: {
             width: '100%',
