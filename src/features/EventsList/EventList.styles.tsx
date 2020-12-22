@@ -3,7 +3,7 @@ import { createStyles } from "@material-ui/core/styles";
 export const styles = () =>
     createStyles({
         avatar: {
-            color: '#c2185b',
+            color: '#03A9F4',
             backgroundColor: '#ffffff',
         },
         listItem: {
@@ -11,27 +11,38 @@ export const styles = () =>
             marginBottom: '0.3rem',
             borderRadius: '0.5rem',
             "&:active, &:hover, &.Mui-focusVisible": {
-                backgroundColor: '#fa5788'
+                backgroundColor: '#03A9F4'
             }
         },
+        listItemContainer: {
+            display: 'flex',
+            flexDirection: 'column'
+        },
+        listItemContainerMain: {
+            display: 'flex',
+            flexDirection: 'row'
+        },
         listItemNotSelected: {
-            backgroundColor: '#8c0032',
+            backgroundColor: '#B3E5FC',
         },
         listItemSelected: {
-            backgroundColor: '#fa5788'
+            backgroundColor: '#03A9F4'
         },
         listItemText: {
             cursor: 'pointer',
+        },
+        listItemTextNotSelectedColor: {
+            color: '#212121',
+        },
+        listItemTextSelectedColor: {
             color: '#ffffff',
         },
         textPrimary: {
             fontWeight: 700
         },
         root: {
-            width: '48%',
-            maxHeight: '60%',
-            position: 'fixed',
-            overflow: 'auto'
+            //position: 'fixed',
+            //overflow: 'auto'
         },
         starIcon: {
             marginRight: '0.2rem'
@@ -40,6 +51,6 @@ export const styles = () =>
             color: '#ffffff',
         },
         starOn: {
-            color: '#fce303'
+            color: '#FFC107'
         },
     });

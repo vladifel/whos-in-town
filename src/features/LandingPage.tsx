@@ -1,17 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { WithStyles, withStyles } from '@material-ui/core/styles';
-import classNames from "classnames";
+import { styles } from './LandingPage.styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { styles } from './LandingPage.styles';
-import SearchComponent from '../helpers/SearchComponent';
-import ArtistCard from './ArtistCard';
-import EventList from './EventList';
-import axios from 'axios';
-import SelectedEvent from './SelectedEvent';
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import SearchComponent from './SearchComponent/SearchComponent';
+import ArtistCard from './ArtistCard/ArtistCard';
+import EventList from './EventsList/EventList';
+import SelectedEvent from './SelectedEvent/SelectedEvent';
+import FavoritesArea from './FavoritesArea/FavoritesArea';
+import { useWindowSize } from '../helpers/useWindowSize';
+import { fetchBand, fetchEvents } from '../helpers/fatchData';
+import { getArtistFavEvents, getLocalFavEvents, setLocalFavEvents } from '../helpers/localEvents';
 
 interface ILandingPageProps {
 
+}
+
+interface ILandingPageActions {
+    artist: IArtist | undefined;
+    setArtist: (artist: IArtist | undefined) => void;
+    events: IEvent[];
+    setEvents: (artist: IEvent[]) => void;
+    selectedEvent: IEvent | undefined;
+    setSelectedEvent: (selectedEvent: IEvent | undefined) => void;
+    handleSearch: (searchText: string) => void;
+    handleEventClick: (eventIndex: number | undefined) => void;
+    handleSetFavorite: (artistId: string, eventId: string, isFavorite: boolean) => void;
 }
 
 export interface IArtist {
@@ -24,6 +39,7 @@ export interface IArtist {
 
 export interface IEvent {
     id: string;
+    artistName: string;
     description: string;
     eventDate: string;
     onSaleDate: string;
@@ -51,6 +67,12 @@ export interface IOffer {
     url: string;
 }
 
+export interface ILocalFavEvents {
+    artistId: string,
+    artistName: string,
+    favEvents: IEvent[]
+}
+
 type ILandingPageCombinedProps = ILandingPageProps & WithStyles<typeof styles>;
 
 const bandNameUpdate = (bandName: string): string => {
@@ -68,71 +90,146 @@ const bandNameUpdate = (bandName: string): string => {
     return bandNameUpdated;
 }
 
-const fetchBand = async (bandName: string) => {
-    const options: any = {
-        method: 'GET',
-        url: `https://rest.bandsintown.com/artists/${bandName}?app_id=123`
-    };
-
-    return await axios.request(options)
-        .then(response => response.data)
-        .catch(error => console.error(error));
+const searchContainer = (landingPageActions: ILandingPageActions, props: ILandingPageCombinedProps) => {
+    return (
+        <Grid item className={props.classes.searchContainer}>
+            {landingPageActions.artist && <SearchComponent
+                handleSearch={landingPageActions.handleSearch}
+            />}
+        </Grid>
+    )
 }
 
-const fetchEvents = async (bandName: string) => {
-    const options: any = {
-        method: 'GET',
-        url: `https://rest.bandsintown.com/artists/${bandName}/events?app_id=123&date=upcoming`
-    };
+const artistAndEvents = (isMobile: boolean, height: number, width: number, landingPageActions: ILandingPageActions, props: ILandingPageCombinedProps) => {
+    return (
+        <Grid
+            className={isMobile ? props.classes.artistContainerMobile : undefined}
+            style={{
+                height: isMobile ? height - 150 : undefined,
+                width: isMobile ? '95%' : '100%'
+            }}
+        >
+            <ArtistCard
+                width={width}
+                isMobile={isMobile}
+                artist={landingPageActions.artist!}
+            />
+            {landingPageActions.events.length
+                ? <Grid item
+                    className={isMobile
+                        ? undefined
+                        : props.classes.eventsContainer}
+                    style={{
+                        height: isMobile ? height - 150 : height - 500,
+                        width: isMobile ? '100%' : '48%'
+                    }}
+                >
+                    <EventList
+                        artistId={landingPageActions.artist!.id}
+                        events={landingPageActions.events}
+                        height={height}
+                        isMobile={isMobile}
+                        selectedEvent={landingPageActions.selectedEvent}
+                        handleEventClick={landingPageActions.handleEventClick}
+                        handleSetFavorite={landingPageActions.handleSetFavorite}
+                    />
+                </Grid>
+                : <Grid className={props.classes.notFound}>
+                    <Typography className={props.classes.subHeaderText}>
+                        No upcoming events. Stay tuned...
+                        </Typography>
+                </Grid>}
+        </Grid>
+    )
+}
 
-    return await axios.request(options)
-        .then(response => response.data)
-        .catch(error => console.error(error));
+const mainContainerDesktop = (landingPageActions: ILandingPageActions, height: number, width: number, props: ILandingPageCombinedProps) => {
+    return (
+        <Grid container className={props.classes.mainContainer}>
+            <Grid container className={props.classes.leftColumn}>
+                {searchContainer(landingPageActions, props)}
+                {landingPageActions.artist
+                    ? artistAndEvents(false, height, width, landingPageActions, props)
+                    : undefined}
+            </Grid>
+            <Grid className={props.classes.rightColumn}>
+                {landingPageActions.selectedEvent && landingPageActions.artist
+                    ? <SelectedEvent
+                        height={height}
+                        isMobile={false}
+                        event={landingPageActions.selectedEvent}
+                        artistName={landingPageActions.artist.name}
+                    />
+                    : undefined}
+            </Grid>
+        </Grid>
+    )
+}
+
+const mainContainerMobile = (landingPageActions: ILandingPageActions, height: number, width: number, props: ILandingPageCombinedProps) => {
+    return (
+        <Grid className={props.classes.mainContainerMobile}>
+            {searchContainer(landingPageActions, props)}
+            {landingPageActions.artist
+                ? artistAndEvents(true, height, width, landingPageActions, props)
+                : undefined}
+        </Grid>
+    )
 }
 
 const LandingPage: React.FunctionComponent<ILandingPageCombinedProps> = (props: ILandingPageCombinedProps) => {
     const [artist, setArtist] = useState<IArtist | undefined>(undefined);
     const [events, setEvents] = useState<IEvent[]>([]);
-    const [favEvents, setFavEvents] = useState<IEvent[]>([]);
+    const [noArtistFound, setNoArtistFound] = useState<boolean>(false);
     const [selectedEvent, setSelectedEvent] = useState<IEvent | undefined>(undefined);
+    const { width, height } = useWindowSize();
+    const matchesMobile = useMediaQuery('(max-width:700px)');
 
     const handleSearch = async (searchText: string) => {
         setSelectedEvent(undefined)
         const bandNameUpdated = bandNameUpdate(searchText);
         const dataP = fetchBand(bandNameUpdated);
-        const eventDataP = fetchEvents(bandNameUpdated);
         const artistData = await dataP.then(res => res);
-        const artistEventData = await eventDataP.then(res => res);
+        if (artistData !== '') {
+            setNoArtistFound(false);
+            const eventDataP = fetchEvents(bandNameUpdated);
+            const artistEventData = await eventDataP.then(res => res);
+            const artistFavEvents = getArtistFavEvents(artistData.id);
 
-        const artistObj: IArtist = {
-            id: artistData.id,
-            name: artistData.name,
-            fbUrl: artistData.facebook_page_url,
-            url: artistData.url,
-            imgUrl: artistData.image_url
+            const artistObj: IArtist = {
+                id: artistData.id,
+                name: artistData.name,
+                fbUrl: artistData.facebook_page_url,
+                url: artistData.url,
+                imgUrl: artistData.image_url
+            };
 
-        };
+            const eventsArr: IEvent[] = [];
+            artistEventData.forEach((event: any) => {
+                let isFavorite = false;
+                artistFavEvents.length && (isFavorite = artistFavEvents.some(favEvent => favEvent.id === event.id))
+                eventsArr.push({
+                    id: event.id,
+                    artistName: artistData.name,
+                    description: event.description,
+                    eventDate: event.datetime,
+                    onSaleDate: event.on_sale_datetime,
+                    lineup: event.lineup,
+                    offers: event.offers,
+                    url: event.url,
+                    venue: event.venue,
+                    isSelected: false,
+                    isFavorite: isFavorite
+                });
+            })
 
-        const eventsArr: IEvent[] = [];
-        artistEventData.forEach((event: any) => {
-            eventsArr.push({
-                id: event.id,
-                description: event.description,
-                eventDate: event.datetime,
-                onSaleDate: event.on_sale_datetime,
-                lineup: event.lineup,
-                offers: event.offers,
-                url: event.url,
-                venue: event.venue,
-                isSelected: false,
-                isFavorite: false
-            });
-        })
-
-        setArtist(artistObj);
-        setEvents(eventsArr);
-        console.log(artistData)
-        console.log(artistEventData)
+            setArtist(artistObj);
+            setEvents(eventsArr);
+        } else {
+            setNoArtistFound(true);
+            setArtist(undefined);
+            setEvents([]);
+        }
     }
 
     const handleEventClick = (eventIndex: number | undefined) => {
@@ -143,29 +240,55 @@ const LandingPage: React.FunctionComponent<ILandingPageCombinedProps> = (props: 
         if (eventIndex !== undefined) {
             const sEvent = currEvents[eventIndex];
             setSelectedEvent(sEvent.isSelected ? sEvent : undefined);
-            console.log(sEvent)
         } else {
             setSelectedEvent(undefined);
         }
         setEvents(currEvents);
     }
 
-    const handleSetFavorite = (eventId: string, isFavorite: boolean) => {
-        let currFavEvents = [...favEvents];
-        let currEvents = [...events];
-        const eventIndex = currEvents.findIndex(event => event.id === eventId);
-        const favEvent = currEvents[eventIndex];
-        favEvent.isFavorite = !isFavorite;
-        setEvents(currEvents);
-
-        if (isFavorite) {
-            const favEventIndex = currFavEvents.findIndex(event => event.id === eventId);
-            currFavEvents.splice(favEventIndex, 1);
-        } else {
-            currFavEvents.push(favEvent);
+    const handleSetFavorite = (artistId: string, eventId: string, isFavorite: boolean) => {
+        let favEvent: IEvent | undefined = undefined;
+        if (artistId === artist?.id) {
+            let currEvents = [...events];
+            const eventIndex = currEvents.findIndex(event => event.id === eventId);
+            favEvent = currEvents[eventIndex];
+            favEvent.isFavorite = !isFavorite;
+            setEvents(currEvents);
         }
-        setFavEvents(currFavEvents);
-        console.log(currFavEvents);
+        let currFavEvents = getLocalFavEvents();
+        const favArtistIndex = currFavEvents.findIndex(artistFav => artistFav.artistId === artist!.id);
+        if (isFavorite) {
+            if (currFavEvents[favArtistIndex].favEvents.length === 1) {
+                currFavEvents.splice(favArtistIndex, 1);
+            } else {
+                const favEventIndex = currFavEvents[favArtistIndex].favEvents.findIndex(event => event.id === eventId);
+                currFavEvents[favArtistIndex].favEvents.splice(favEventIndex, 1);
+
+            }
+        } else if (favEvent) {
+            if (favArtistIndex === -1) {
+                currFavEvents.push({
+                    artistId: artist!.id,
+                    artistName: artist!.name,
+                    favEvents: [favEvent]
+                });
+            } else {
+                currFavEvents[favArtistIndex].favEvents.push(favEvent);
+            }
+        }
+        setLocalFavEvents(currFavEvents);
+    }
+
+    const landingPageActions: ILandingPageActions = {
+        artist: artist,
+        setArtist: setArtist,
+        events: events,
+        setEvents: setEvents,
+        selectedEvent: selectedEvent,
+        setSelectedEvent: setSelectedEvent,
+        handleSearch: handleSearch,
+        handleEventClick: handleEventClick,
+        handleSetFavorite: handleSetFavorite
     }
 
     return (
@@ -178,39 +301,27 @@ const LandingPage: React.FunctionComponent<ILandingPageCombinedProps> = (props: 
                     Who's In Town
                 </Typography>
             </Grid>
-            <Grid container className={props.classes.mainContainer}>
-                <Grid container
-                    className={props.classes.leftColumn}
-                >
-                    <Grid item className={props.classes.searchContainer}>
-                        <SearchComponent
-                            handleSearch={handleSearch}
-                        />
-                    </Grid>
-                    <Grid item>
-                        {artist
-                            ? <ArtistCard
-                                artist={artist}
-                            />
-                            : undefined}
-                    </Grid>
-                    <Grid item className={props.classes.eventsContainer}>
-                        <EventList
-                            events={events}
-                            handleEventClick={handleEventClick}
-                            handleSetFavorite={handleSetFavorite}
-                        />
-                    </Grid>
+            {!artist
+                ? <Grid className={props.classes.onlySearch}>
+                    <SearchComponent
+                        handleSearch={landingPageActions.handleSearch}
+                    />
+                    {noArtistFound &&
+                        <Grid className={props.classes.notFound}>
+                            <Typography className={props.classes.subHeaderText}>
+                                No artist by that name. Please try again...
+                        </Typography>
+                        </Grid>}
                 </Grid>
-                <Grid className={props.classes.rightColumn}>
-                    {selectedEvent
-                        ?
-                        <SelectedEvent
-                            event={selectedEvent}
-                            artistName={artist!.name}
-                        />
-                        : undefined}
-                </Grid>
+                : matchesMobile
+                    ? mainContainerMobile(landingPageActions, height, width, props)
+                    : mainContainerDesktop(landingPageActions, height, width, props)
+            }
+            <Grid className={props.classes.rootRight}>
+                <FavoritesArea
+                    height={height}
+                    handleSetFavorite={handleSetFavorite}
+                />
             </Grid>
         </Grid>
     );

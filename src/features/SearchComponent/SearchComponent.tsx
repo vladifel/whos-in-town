@@ -1,43 +1,43 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { WithStyles, withStyles, createStyles, makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
-import ClearIcon from '@material-ui/icons/Clear';
 import FormControl from '@material-ui/core/FormControl';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
+
 const styles = () =>
     createStyles({
         clearIcon: {
             marginRight: '0.5rem'
         },
         icon: {
-            color: '#c2185b',
+            color: '#03A9F4',
             fontSize: '2rem',
             "&:active, &:hover, &.Mui-focusVisible": {
-                color: '#fa5788',
+                color: '#B3E5FC',
                 backgroundColor: 'transparent',
             }
         },
         root: {
-            boxShadow: '0 0 0.3rem 0.1rem rgba(194,24,91,0.7)'
+            boxShadow: '0 0 0.3rem 0.1rem rgba(3, 169, 244,0.7)'
         }
     });
 
 const useOutlinedInputStyles = makeStyles(() => ({
     root: {
         "&:hover $notchedOutline": {
-            borderColor: "#c2185b"
+            borderColor: "#03A9F4"
         },
         "&$focused $notchedOutline": {
-            borderColor: "#c2185b"
+            borderColor: "#03A9F4"
         }
     },
     focused: {},
     notchedOutline: {}
 }));
+
 interface ISearchComponentProps {
     handleSearch: (searchText: string) => void;
 }
@@ -47,9 +47,19 @@ type ISearchComponentCombinedProps = ISearchComponentProps & WithStyles<typeof s
 const SearchComponent: React.FunctionComponent<ISearchComponentCombinedProps> = (props: ISearchComponentCombinedProps) => {
     const outlinedInputClasses = useOutlinedInputStyles();
     const [text, setText] = useState<string>('');
+
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        e.key === 'Enter' && props.handleSearch(text)
+        if (e.key === 'Enter') {
+            props.handleSearch(text);
+            setText('');
+        }
     }
+
+    const handleIconClick = () => {
+        props.handleSearch(text);
+        setText('');
+    }
+
     return (
         <FormControl
             fullWidth variant="outlined">
@@ -74,7 +84,7 @@ const SearchComponent: React.FunctionComponent<ISearchComponentCombinedProps> = 
                             : undefined}
                         <InputAdornment position="end">
                             <IconButton
-                                onClick={() => props.handleSearch(text)}
+                                onClick={handleIconClick}
                             >
                                 <SearchIcon className={props.classes.icon} />
                             </IconButton>

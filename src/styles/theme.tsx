@@ -1,28 +1,11 @@
-import {
-    createMuiTheme
-} from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 
 export default createMuiTheme({
-    typography: {
-        //fontFamily: ['Impact', 'Charcoal', 'sans- serif'],
-        //textAlign: 'left',
-        //fontSize: '20px'
-    },
-    palette: {
-        primary: {
-            main: '#1976D2'
-        },
-        secondary: {
-            main: '#FFC107'
-        },
-    },
     overrides: {
         MuiIconButton: {
             root: {
-                color: '#FFC107',
                 padding: '0.3rem',
                 "&:active, &:hover, &.Mui-focusVisible": {
-                    color: 'rgba(255,133,7,1)',
                     backgroundColor: 'transparent',
                 }
             }
@@ -34,24 +17,6 @@ export default createMuiTheme({
                 padding: '1rem',
                 "&:last-child": {
                     paddingBottom: '0.5rem',
-                }
-            }
-        },
-
-
-
-        MuiButtonBase: {
-            root: {
-                minWidth: 0,
-                width: '1rem',
-            }
-        },
-        MuiCheckbox: {
-            colorSecondary: {
-                color: '#FFC107',
-                "&:active, &:hover, &.Mui-focusVisible": {
-                    color: 'rgba(255,133,7,1)',
-                    backgroundColor: 'transparent',
                 }
             }
         },
