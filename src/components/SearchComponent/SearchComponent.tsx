@@ -1,6 +1,12 @@
 import React, { FC, Fragment, useState } from "react";
 import { WithStyles, withStyles, createStyles, makeStyles } from "@material-ui/core/styles";
-import { FormControl, OutlinedInput, InputAdornment, IconButton } from "@material-ui/core";
+import {
+  CircularProgress,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+} from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 
@@ -36,12 +42,15 @@ const useOutlinedInputStyles = makeStyles(() => ({
 }));
 
 interface ISearchComponentProps {
+  searching: boolean;
+
   handleSearch: (searchText: string) => void;
 }
 
 type ISearchComponentCombinedProps = ISearchComponentProps & WithStyles<typeof styles>;
 
 const SearchComponent: FC<ISearchComponentCombinedProps> = ({
+  searching,
   handleSearch,
   classes,
 }: ISearchComponentCombinedProps) => {
@@ -70,20 +79,24 @@ const SearchComponent: FC<ISearchComponentCombinedProps> = ({
         onKeyDown={handleKeyPress}
         classes={outlinedInputClasses}
         endAdornment={
-          <Fragment>
-            {text !== "" ? (
+          searching ? (
+            <CircularProgress />
+          ) : (
+            <Fragment>
+              {text !== "" ? (
+                <InputAdornment position="end">
+                  <IconButton className={classes.clearIcon} onClick={() => setText("")}>
+                    <ClearIcon className={classes.icon} />
+                  </IconButton>
+                </InputAdornment>
+              ) : undefined}
               <InputAdornment position="end">
-                <IconButton className={classes.clearIcon} onClick={() => setText("")}>
-                  <ClearIcon className={classes.icon} />
+                <IconButton onClick={handleIconClick}>
+                  <SearchIcon className={classes.icon} />
                 </IconButton>
               </InputAdornment>
-            ) : undefined}
-            <InputAdornment position="end">
-              <IconButton onClick={handleIconClick}>
-                <SearchIcon className={classes.icon} />
-              </IconButton>
-            </InputAdornment>
-          </Fragment>
+            </Fragment>
+          )
         }
       />
     </FormControl>

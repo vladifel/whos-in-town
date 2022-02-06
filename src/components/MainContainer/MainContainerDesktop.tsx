@@ -15,6 +15,7 @@ interface IMainContainerDesktopProps {
   artist: IArtist;
   selectedEvent: IEvent | undefined;
   events: IEvent[];
+  searching: boolean;
 
   handleSearch: (search: string) => void;
   handleEventClick: (eventIndex: number | undefined) => void;
@@ -29,6 +30,7 @@ const MainContainerDesktop: FC<IMainContainerDesktopCombinedProps> = ({
   width,
   selectedEvent,
   events,
+  searching,
   handleSearch,
   handleEventClick,
   handleSetFavorite,
@@ -38,7 +40,7 @@ const MainContainerDesktop: FC<IMainContainerDesktopCombinedProps> = ({
     <Grid container className={classes.mainContainer}>
       <Grid container className={classes.leftColumn}>
         <Grid item className={classes.searchContainer}>
-          <SearchComponent handleSearch={handleSearch} />
+          <SearchComponent handleSearch={handleSearch} searching={searching} />
         </Grid>
         <ArtistAndEvents
           height={height}

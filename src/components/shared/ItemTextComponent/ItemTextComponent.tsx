@@ -17,7 +17,7 @@ const ItemTextComponent: FC<IItemTextComponentProps> = ({
   classes,
   artistName,
 }: IItemTextComponentProps) => {
-  const date = format(parseISO(eventDate), "dd.MM.yyyyy");
+  const date = format(parseISO(eventDate), "dd.MM.yyyy");
   const primaryText = artistName ? `${artistName} - ${date}` : date;
   return <ListItemText classes={classes} primary={primaryText} secondary={`${city}, ${country}`} />;
 };

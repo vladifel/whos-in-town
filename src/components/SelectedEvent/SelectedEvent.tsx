@@ -1,10 +1,14 @@
-import React, { Fragment } from "react";
-import classNames from "classnames";
+import React from "react";
 import { WithStyles, withStyles } from "@material-ui/core/styles";
-import { Card, CardContent, Link, Typography, Grid, Tooltip, IconButton } from "@material-ui/core";
-import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
+import { Grid } from "@material-ui/core";
 
-import { IEvent, IOffer } from "../LandingPage";
+import { IEvent } from "components/types";
+
+import NameCard from "./cards/NameCard";
+import VenueCard from "./cards/VenueCard";
+import TicketsCard from "./cards/TicketsCard";
+import LineupCard from "./cards/LineupCard";
+import OffersCard from "./cards/OffersCard";
 import { styles } from "./SelectedEvent.styles";
 
 interface ISelectedEventProps {
@@ -16,143 +20,21 @@ interface ISelectedEventProps {
 
 type ISelectedEventCombinedProps = ISelectedEventProps & WithStyles<typeof styles>;
 
-const nameCard = (props: ISelectedEventCombinedProps) => {
+const SelectedEvent: React.FunctionComponent<ISelectedEventCombinedProps> = ({
+  height,
+  artistName,
+  event,
+  isMobile,
+  classes,
+}: ISelectedEventCombinedProps) => {
+  const { onSaleDate, lineup, offers } = event;
   return (
-    <Card className={props.classes.darkCard}>
-      <CardContent
-        className={classNames(props.classes.cardContainer, props.classes.nameCardContentContainer)}
-      >
-        <Link
-          className={props.classes.headerLink}
-          underline="none"
-          href={props.event.url}
-          target="_blank"
-        >
-          <Typography className={props.classes.headerText}>
-            {props.event.description === "" || props.event.description.length > 100
-              ? props.artistName
-              : props.event.description}
-          </Typography>
-        </Link>
-        <Typography className={props.classes.secondaryText}>{props.event.venue.name}</Typography>
-      </CardContent>
-    </Card>
-  );
-};
-
-const cardText = (textLeft: string, textRight: string, props: ISelectedEventCombinedProps) => {
-  return (
-    <Fragment>
-      <Typography className={props.classes.secondaryText}>{textLeft}</Typography>
-      <Typography className={props.classes.secondaryText}>{textRight}</Typography>
-    </Fragment>
-  );
-};
-
-const venueCard = (props: ISelectedEventCombinedProps) => {
-  const dateFull = props.event.eventDate.split("T");
-  const date = dateFull[0].split("-");
-  return (
-    <Card className={props.classes.darkCard}>
-      <Grid
-        container
-        className={classNames(props.classes.cardContainer, props.classes.venueCardContentContainer)}
-      >
-        {cardText(
-          `${date[2]}.${date[1]}.${date[0]}`,
-          `${props.event.venue.city}, ${props.event.venue.country}`,
-          props
-        )}
-      </Grid>
-    </Card>
-  );
-};
-
-const ticketsCard = (props: ISelectedEventCombinedProps) => {
-  let saleDate: string[] = [];
-  let saleTime: string[] = [];
-  if (props.event.onSaleDate !== "") {
-    const saleDateFull = props.event.onSaleDate.split("T");
-    saleDate = saleDateFull[0].split("-");
-    saleTime = saleDateFull[1].split(":");
-  }
-  return (
-    <Card className={props.classes.darkCard}>
-      <Grid
-        className={classNames(props.classes.cardContainer, props.classes.venueCardContentContainer)}
-      >
-        {props.event.onSaleDate !== ""
-          ? cardText(
-              "Ticket sale start:",
-              `${saleDate[2]}.${saleDate[1]}.${saleDate[0]} ${saleTime[0]}:${saleTime[1]}`,
-              props
-            )
-          : cardText("Ticket sale date to be announced", "", props)}
-      </Grid>
-    </Card>
-  );
-};
-
-const lineupCard = (props: ISelectedEventCombinedProps) => {
-  return (
-    <Card className={props.classes.darkCard}>
-      {props.event.lineup.length === 1 ? (
-        <Grid container className={props.classes.lineupCardSingleLine}>
-          <Typography className={props.classes.subHeaderText}>Lineup:</Typography>
-          <Typography className={props.classes.secondaryText}>
-            {` ${props.event.lineup}`}
-          </Typography>
-        </Grid>
-      ) : (
-        <Grid container className={props.classes.lineupCardMultiline}>
-          <Typography className={props.classes.subHeaderText}>Lineup:</Typography>
-          <Typography className={props.classes.secondaryText}>
-            {props.event.lineup.map((name, i) =>
-              i !== props.event.lineup.length - 1 ? `${name}, ` : name
-            )}
-          </Typography>
-        </Grid>
-      )}
-    </Card>
-  );
-};
-
-const offerIcon = (index: number, offer: IOffer, props: ISelectedEventCombinedProps) => {
-  return (
-    <Tooltip title="Check out this special offer" enterDelay={500} enterNextDelay={500} key={index}>
-      <IconButton key={index} className={props.classes.offerIcon} disableFocusRipple disableRipple>
-        <Link className={props.classes.offerIcon} href={offer.url} target="_blank">
-          <MonetizationOnIcon className={props.classes.offerIconColor} />
-        </Link>
-      </IconButton>
-    </Tooltip>
-  );
-};
-
-const offersCard = (props: ISelectedEventCombinedProps) => {
-  return (
-    <Card className={props.classes.darkCard}>
-      <Grid container className={props.classes.offersCardSingleLine}>
-        <Typography className={props.classes.subHeaderText}>Offers:</Typography>
-        {props.event.offers.map((offer, i) => offerIcon(i, offer, props))}
-      </Grid>
-    </Card>
-  );
-};
-
-const SelectedEvent: React.FunctionComponent<ISelectedEventCombinedProps> = (
-  props: ISelectedEventCombinedProps
-) => {
-  return (
-    <Grid
-      style={{ height: props.isMobile ? undefined : props.height - 100 }}
-      className={props.classes.root}
-    >
-      {nameCard(props)}
-      {venueCard(props)}
-      {ticketsCard(props)}
-      {lineupCard(props)}
-      {props.event.offers.length ? offersCard(props) : undefined}
+    <Grid style={{ height: isMobile ? undefined : height - 100 }} className={classes.root}>
+      <NameCard artistName={artistName} event={event} />
+      <VenueCard event={event} />
+      <TicketsCard onSaleDate={onSaleDate} />
+      <LineupCard lineup={lineup} />
+      {offers.length > 0 && <OffersCard offers={offers} />}
     </Grid>
   );
 };

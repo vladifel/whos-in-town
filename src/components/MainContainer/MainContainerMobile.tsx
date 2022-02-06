@@ -13,6 +13,7 @@ interface IMainContainerMobileProps {
   height: number;
   artist: IArtist;
   selectedEvent: IEvent | undefined;
+  searching: boolean;
   events: IEvent[];
 
   handleSearch: (search: string) => void;
@@ -28,6 +29,7 @@ const MainContainerMobile: FC<IMainContainerMobileCombinedProps> = ({
   width,
   selectedEvent,
   events,
+  searching,
   handleSearch,
   handleEventClick,
   handleSetFavorite,
@@ -36,7 +38,7 @@ const MainContainerMobile: FC<IMainContainerMobileCombinedProps> = ({
   return (
     <Grid className={classes.mainContainerMobile}>
       <Grid item className={classes.searchContainer}>
-        <SearchComponent handleSearch={handleSearch} />
+        <SearchComponent handleSearch={handleSearch} searching={searching} />
       </Grid>
       <ArtistAndEvents
         height={height}

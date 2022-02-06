@@ -25,8 +25,10 @@ const LandingPage: FC<ILandingPageCombinedProps> = ({ classes }: ILandingPageCom
   const [events, setEvents] = useState<IEvent[]>([]);
   const [noArtistFound, setNoArtistFound] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<IEvent | undefined>(undefined);
+  const [searching, setSearching] = useState(false);
 
   const handleSearch = async (searchText: string) => {
+    setSearching(true);
     setSelectedEvent(undefined);
     const bandNameUpdated = bandNameUpdate(searchText);
     const artistData: any = await fetchData(
@@ -51,6 +53,7 @@ const LandingPage: FC<ILandingPageCombinedProps> = ({ classes }: ILandingPageCom
       setArtist(undefined);
       setEvents([]);
     }
+    setSearching(false);
   };
 
   const handleEventClick = (eventIndex: number | undefined) => {
@@ -107,7 +110,7 @@ const LandingPage: FC<ILandingPageCombinedProps> = ({ classes }: ILandingPageCom
       </Grid>
       {!artist ? (
         <Grid className={classes.onlySearch}>
-          <SearchComponent handleSearch={handleSearch} />
+          <SearchComponent handleSearch={handleSearch} searching={searching} />
           {noArtistFound && (
             <Grid className={classes.notFound}>
               <Typography className={classes.subHeaderText}>
@@ -123,6 +126,7 @@ const LandingPage: FC<ILandingPageCombinedProps> = ({ classes }: ILandingPageCom
           artist={artist}
           events={events}
           selectedEvent={selectedEvent}
+          searching={searching}
           handleSearch={handleSearch}
           handleEventClick={handleEventClick}
           handleSetFavorite={handleSetFavorite}
@@ -134,6 +138,7 @@ const LandingPage: FC<ILandingPageCombinedProps> = ({ classes }: ILandingPageCom
           artist={artist}
           events={events}
           selectedEvent={selectedEvent}
+          searching={searching}
           handleSearch={handleSearch}
           handleEventClick={handleEventClick}
           handleSetFavorite={handleSetFavorite}
