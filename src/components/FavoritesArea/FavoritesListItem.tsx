@@ -9,6 +9,7 @@ import ItemTextComponent from "components/shared/ItemTextComponent/ItemTextCompo
 import { IEvent } from "components/types";
 
 interface IFavoritesListItemProps {
+  key: string;
   artistName: string;
   artistId: string;
   event: IEvent;

@@ -25,6 +25,7 @@ const styles = () =>
     },
     root: {
       boxShadow: "0 0 0.3rem 0.1rem rgba(3, 169, 244,0.7)",
+      backgroundColor: "#FFFFFF",
     },
   });
 

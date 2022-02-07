@@ -44,6 +44,7 @@ const FavoritesArea: React.FunctionComponent<IFavoritesAreaCombinedProps> = ({
                 dataToShow.map(artist =>
                   artist.favEvents.map(event => (
                     <FavoritesListItem
+                      key={event.id}
                       artistName={artist.artistName}
                       artistId={artist.artistId}
                       event={event}

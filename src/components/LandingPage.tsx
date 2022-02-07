@@ -7,6 +7,7 @@ import { fetchData } from "helpers/fetchData";
 import { getArtistFavEvents, getLocalFavEvents, setLocalFavEvents } from "helpers/localEvents";
 import { bandNameUpdate } from "helpers/bandNameUpdate";
 
+import bg from "../assets/fest.jpg";
 import SearchComponent from "./SearchComponent/SearchComponent";
 import FavoritesArea from "./FavoritesArea/FavoritesArea";
 import MainContainerMobile from "./MainContainer/MainContainerMobile";
